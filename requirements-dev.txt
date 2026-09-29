@@ -1,0 +1,2 @@
+-r spend-import/requirements.txt
+pytest>=8

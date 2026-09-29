@@ -1,0 +1,7 @@
+date,campaign_id,campaign_name,ad_group_id,creative_id,creative_name,spend,impressions,action_purchase,order_value_purchase,action_add_to_cart,order_value_add_to_cart
+09/01/2026,cmp_1001,CTV Prospecting,grp_2001,crv_3001,Spot A 30s,"1,204.50",98012,3,267.00,11,0
+09/01/2026,cmp_1001,CTV Prospecting,grp_2001,crv_3002,Spot B 15s,310.25,25120,1,89.00,4,0
+09/02/2026,cmp_1001,CTV Prospecting,grp_2001,crv_3001,Spot A 30s,980.00,80344,2,178.00,6,0
+09/03/2026,cmp_1001,CTV Prospecting,grp_2001,crv_3001,Spot A 30s,1010.10,82001,4,356.00,9,0
+09/03/2026,cmp_1001,CTV Prospecting,grp_2001,crv_3002,Spot B 15s,299.90,24800,0,0,2,0
+not-a-date,cmp_1001,CTV Prospecting,grp_2001,crv_3001,Spot A 30s,1,1,0,0,0,0

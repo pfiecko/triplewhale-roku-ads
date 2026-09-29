@@ -1,0 +1,33 @@
+gcp:
+  project_id: test-project
+  secrets:
+    triplewhale_api_key: triplewhale-api-key
+    oauth_client_id: roku-oauth-client-id
+    oauth_client_secret: roku-oauth-client-secret
+    oauth_refresh_token: roku-oauth-refresh-token
+    run_secret: roku-import-run-secret
+    capi_token: roku-capi-token
+    pixel_secret: roku-pixel-secret
+roku:
+  api_base: https://api.ads.roku.com/v1/developer
+  token_url: https://api.ads.roku.com/v1/developer/token
+  redirect_uri: https://example.test/oauth/callback
+  authorize_url: https://ads.roku.test/authorize?client_id=x
+  account_uid: ""
+triplewhale:
+  shop_id: example.myshopify.com
+  channel: Roku Ads
+  channel_account_id: roku
+  currency: USD
+  conversion_event: purchase
+import:
+  lookback_days: 14
+  poll_timeout_s: 1
+  poll_interval_s: 0
+conversions:
+  events_url: https://events.test/v1/events
+  test_events_url: https://events.test/v1/test_events
+  use_test_endpoint: false
+  event_group_id: EG_TEST
+  allowed_currencies: [USD]
+  allowed_countries: [US]

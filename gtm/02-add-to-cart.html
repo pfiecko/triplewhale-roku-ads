@@ -1,0 +1,34 @@
+<script>
+/**
+ * GTM tag:  cHTML - Roku Ads - ADD_TO_CART
+ * Trigger:  your GA4 add_to_cart custom event
+ *
+ * Maps a GA4 add_to_cart ecommerce object to Roku ADD_TO_CART, gated by
+ * window.__rokuInScope from the init tag.
+ *
+ * Requires Data Layer variables:
+ *   {{dlv - ecommerce.items}}  {{dlv - ecommerce.value}}  {{dlv - ecommerce.currency}}
+ */
+(function () {
+  if (!window.rkp || !(window.__rokuInScope && window.__rokuInScope())) return;
+
+  var items = {{dlv - ecommerce.items}} || [];
+  var contents = items.map(function (i) {
+    var price = parseFloat(i.price != null ? i.price : i.item_price);
+    return {
+      id:         i.item_id || i.id || '',
+      quantity:   i.quantity || 1,
+      item_price: (isFinite(price) && price > 0) ? price : undefined
+    };
+  });
+
+  rkp('event', 'ADD_TO_CART', {
+    value:        parseFloat({{dlv - ecommerce.value}}) || 0,
+    currency:     {{dlv - ecommerce.currency}},
+    contents:     contents,
+    content_ids:  contents.map(function (c) { return c.id; }).filter(Boolean),
+    content_type: 'product',
+    num_items:    contents.reduce(function (n, c) { return n + (c.quantity || 0); }, 0)
+  });
+})();
+</script>

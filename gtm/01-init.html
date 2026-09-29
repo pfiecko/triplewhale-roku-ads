@@ -1,0 +1,53 @@
+<script>
+/**
+ * GTM tag:  cHTML - Roku Ads - init + PAGE_VIEW
+ * Trigger:  DOM Ready - All Pages (must fire before the other Roku tags)
+ *
+ * Loads the Roku pixel (rkp), initialises the event group, exposes the shared scope
+ * gate as window.__rokuInScope for the other Roku tags, and fires PAGE_VIEW.
+ *
+ * Requires a GTM constant variable {{const - roku event group id}}.
+ * Scope: edit the two lists to match the conversion proxy config (empty = everyone).
+ */
+(function () {
+  var ALLOWED_CURRENCIES = [];   // e.g. ['USD']
+  var ALLOWED_COUNTRIES  = [];   // e.g. ['US']
+
+  !function (e, r) {
+    if (!e.rkp) {
+      var t = e.rkp = function () {
+        var a = Array.prototype.slice.call(arguments);
+        a.push(Date.now());
+        t.eventProcessor ? t.eventProcessor.apply(t, a) : t.queue.push(a);
+      };
+      t.initiatorVersion = "1.0";
+      t.queue = [];
+      t.load = function (u) {
+        var s = r.createElement("script");
+        s.async = !0; s.src = u;
+        var n = r.getElementsByTagName("script")[0];
+        (n ? n.parentNode : r.body).insertBefore(s, n);
+      };
+      rkp.load("https://cdn.ravm.tv/ust/dist/rkp.loader.js");
+    }
+  }(window, document);
+
+  // Shopify storefronts expose the active currency and country on window.Shopify.
+  window.__rokuInScope = function () {
+    try {
+      var s = window.Shopify || {};
+      var currency = (s.currency && s.currency.active) || '';
+      var country = s.country || '';
+      if (ALLOWED_CURRENCIES.length && ALLOWED_CURRENCIES.indexOf(currency) < 0) return false;
+      if (ALLOWED_COUNTRIES.length && country && ALLOWED_COUNTRIES.indexOf(country) < 0) return false;
+      return true;
+    } catch (e) { return false; }
+  };
+
+  rkp('init', '{{const - roku event group id}}');
+
+  if (window.__rokuInScope()) {
+    rkp('event', 'PAGE_VIEW', { event_source_URL: window.location.href });
+  }
+})();
+</script>

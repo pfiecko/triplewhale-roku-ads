@@ -1,0 +1,58 @@
+# Copy to config.yaml and fill in. config.yaml is git-ignored; it holds ids, never secrets.
+
+gcp:
+  project_id:      my-gcp-project
+  region:          europe-west1
+  service_account: tw-importer@my-gcp-project.iam.gserviceaccount.com   # runtime + scheduler identity
+  secrets:                                          # Secret Manager ids
+    triplewhale_api_key:  triplewhale-api-key       # Triple Whale key with scope "Ads: Write"
+    oauth_client_id:      roku-oauth-client-id      # Roku developer app
+    oauth_client_secret:  roku-oauth-client-secret  # shown once when the app is created
+    oauth_refresh_token:  roku-oauth-refresh-token  # written by /oauth/callback, rotated by /run
+    run_secret:           roku-import-run-secret    # X-Run-Secret header that gates /run
+    capi_token:           roku-capi-token           # Conversions API bearer JWT
+    pixel_secret:         roku-pixel-secret         # X-Pixel-Secret shared with the Shopify pixel
+
+# --- spend-import: Roku Ads API → Triple Whale -----------------------------------------
+roku:
+  api_base:  https://api.ads.roku.com/v1/developer
+  token_url: https://api.ads.roku.com/v1/developer/token
+  # Must match the redirect URI registered in the Roku developer app character for character.
+  # Gen2 functions have a predictable cloudfunctions.net URL, so it is known before the first deploy.
+  redirect_uri: https://europe-west1-my-gcp-project.cloudfunctions.net/roku-ads-tw-import/oauth/callback
+  # Ads Manager → Organization → Ads API → your app → "Authorization URL". /oauth/start
+  # redirects here. Leave empty and open that URL directly if you prefer.
+  authorize_url: ""
+  # Ad account to import. Empty = the first account the app can see.
+  account_uid: ""
+
+triplewhale:
+  shop_id:            your-store.myshopify.com
+  channel:            Roku Ads   # the channel name the spend appears under
+  channel_account_id: roku       # replaced by the Roku account uid at runtime when available
+  currency:           USD        # replaced by the Roku account currency when available
+  # Roku reports conversions as one column pair per event (action_<event>, order_value_<event>).
+  # This event becomes Triple Whale conversions + conversion_value. Empty = do not import conversions.
+  conversion_event:   purchase
+
+import:
+  lookback_days:   14    # Roku restates for 8h+ and attributes over 14 days
+  poll_timeout_s:  780   # report generation with conversion columns can take 8-13 min
+  poll_interval_s: 10
+
+schedule:
+  cron:      "30 9 * * *"
+  time_zone: UTC
+
+# --- conversion-proxy: Shopify pixel → Roku Conversions API ------------------------------
+conversions:
+  events_url:      https://events.ads.rokuapi.net/v1/events
+  test_events_url: https://events.ads.rokuapi.net/v1/test_events
+  # true while validating in Ads Manager's test events view. Test events never count as
+  # conversions and never mark the CAPI source as connected, so flip to false for production.
+  use_test_endpoint: true
+  event_group_id:    YOUR_EVENT_GROUP_ID   # Ads Manager → Events → CAPI
+  # Optional order filter, applied in the pixel and again here. Empty lists allow everything.
+  # Example: only US buyers paying USD → [USD] and [US].
+  allowed_currencies: []
+  allowed_countries:  []
