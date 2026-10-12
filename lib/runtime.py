@@ -1,9 +1,9 @@
 """
-Runtime helpers shared by every Cloud Function in the triplewhale-* repos.
+Runtime helpers shared by the Cloud Function repos published under github.com/pfiecko.
 
-VENDORED: this file is identical in triplewhale-shop-campaigns, triplewhale-roku-ads
-and triplewhale-openai-ads. Change it in one place and copy it to the others.
-lib-version: 1.0.0
+VENDORED: this file is byte-identical in every repo that ships lib/runtime.py.
+Change the canonical copy and copy it to the others; never edit one repo's copy.
+lib-version: 1.0.1
 
 - config: `config.yaml` is looked up in $CONFIG_PATH, next to this module (deployed
   bundle), then one directory up (repo root, when running locally).

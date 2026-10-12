@@ -1,4 +1,4 @@
-# VENDORED with lib/runtime.py: identical in every triplewhale-* repo.
+# VENDORED with lib/runtime.py: identical in every repo that ships it.
 import datetime as dt
 
 import pytest

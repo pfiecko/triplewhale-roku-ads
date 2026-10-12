@@ -1,9 +1,9 @@
 """
 Triple Whale Data-In Ads API client: build ad records and upsert them.
 
-VENDORED: this file is identical in triplewhale-shop-campaigns, triplewhale-roku-ads
-and triplewhale-openai-ads. Change it in one place and copy it to the others.
-lib-version: 1.0.0
+VENDORED: this file is byte-identical in every triplewhale-* repo.
+Change the canonical copy and copy it to the others; never edit one repo's copy.
+lib-version: 1.0.1
 
 Endpoint: POST https://api.triplewhale.com/api/v2/data-in/ads  (header x-api-key,
 scope "Ads: Write"). Docs: https://triplewhale.readme.io/reference/create-ad-record

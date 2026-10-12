@@ -4,17 +4,19 @@
 #   ./deploy.sh <function>              deploy (or redeploy)
 #   ./deploy.sh <function> --schedule   also create/update its Cloud Scheduler job
 #
-# Project, region and service account come from config.yaml. The function folder, lib/
-# and config.yaml are staged into a temporary directory and deployed from there, so the
-# git-ignored config.yaml is uploaded without being committed.
+# Project, region and service account come from config.yaml (or the file named by
+# CONFIG_PATH). The function folder, lib/ and the config are staged into a temporary
+# directory and deployed from there, so the git-ignored config is uploaded as
+# config.yaml without being committed.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FN="${1:-}"
-[[ -f "${ROOT}/config.yaml" ]] || { echo "config.yaml missing: cp config.example.yaml config.yaml" >&2; exit 1; }
+CONFIG="${CONFIG_PATH:-${ROOT}/config.yaml}"
+[[ -f "${CONFIG}" ]] || { echo "${CONFIG} missing: cp config.example.yaml config.yaml" >&2; exit 1; }
 
-cfg() {  # cfg gcp.region → value from config.yaml
-  python3 - "$1" "${ROOT}/config.yaml" <<'PY'
+cfg() {  # cfg gcp.region → value from the config
+  python3 - "$1" "${CONFIG}" <<'PY'
 import sys, yaml
 v = yaml.safe_load(open(sys.argv[2]))
 for k in sys.argv[1].split("."):
@@ -48,7 +50,9 @@ esac
 # ───────────────────────────────────────────────────────────────────────────────────────
 
 BUILD="$(mktemp -d)"; trap 'rm -rf "${BUILD}"' EXIT
-cp "${ROOT}/${FN}"/*.py "${ROOT}/${FN}/requirements.txt" "${ROOT}/config.yaml" "${BUILD}/"
+cp -R "${ROOT}/${FN}/." "${BUILD}/"
+find "${BUILD}" -name __pycache__ -type d -prune -exec rm -rf {} +
+cp "${CONFIG}" "${BUILD}/config.yaml"
 for m in "${LIBS[@]}"; do cp "${ROOT}/lib/${m}.py" "${BUILD}/"; done
 
 echo "── Deploying ${NAME} (${PROJECT_ID} / ${REGION}) ──"
